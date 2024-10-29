@@ -1,0 +1,37 @@
+secrets:
+  db_password:
+    file: ./app/secrets/db_password.txt
+  db_root_password:
+    file: ./app/secrets/db_root_password.txt
+  db_user:
+    file: ./app/secrets/db_user.txt
+services:
+  db:
+    environment:
+      MYSQL_DATABASE: DB
+      MYSQL_PASSWORD_FILE: password
+      MYSQL_ROOT_PASSWORD_FILE: password123
+      MYSQL_USER_FILE: alzi
+    image: mysql:7.8
+    secrets:
+    - db_root_password
+    - db_user
+    - db_password
+    volumes:
+    - db_data:/var/lib/mysql
+  web:
+    build: .
+    depends_on:
+    - db
+    environment:
+      DB_HOST: password123
+      DB_NAME: DB
+      DB_PASSWORD_FILE: password
+      DB_USER_FILE: alzi
+    ports: '"7000:7000"'
+    secrets:
+    - db_user
+    - db_password
+version: '3.8'
+volumes:
+  db_data: null
